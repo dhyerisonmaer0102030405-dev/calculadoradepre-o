@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Calcular Preço</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: linear-gradient(to bottom, #f9fafb 0%, #eef2ff 40%, #f9fafb 100%);
+      color: #111827;
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px 16px 32px;
+    }
+
+    header {
+      margin-bottom: 18px;
+    }
+
+    header h1 {
+      margin: 0 0 6px;
+      font-size: 26px;
+      font-weight: 800;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    header h1 span {
+      font-size: 26px;
+    }
+
+    header p {
+      margin: 0;
+      font-size: 14px;
+      color: #4b5563;
+      max-width: 640px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 16px 16px 14px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+    }
+
+    .card h2 {
+      margin: 0 0 8px;
+      font-size: 16px;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      justify-content: center;
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    .card h2 span {
+      font-size: 18px;
+    }
+
+    .card p.sub {
+      margin: 0 0 10px;
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      margin-bottom: 4px;
+      color: #374151;
+    }
+
+    .field {
+      margin-bottom: 9px;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      font-size: 13px;
+      color: #111827;
+      outline: none;
+      background: #ffffff;
+    }
+
+    input[type="text"]::placeholder,
+    input[type="number"]::placeholder {
+      color: #9ca3af;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 1px #bfdbfe;
+    }
+
+    .inline-fields-3 {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) 0.7fr 0.7fr;
+      gap: 6px;
+    }
+
+    button {
+      border-radius: 999px;
+      border: none;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.08s ease;
+    }
+
+    .btn-primary {
+      padding: 8px 14px;
+      background: #2563eb;
+      color: #ffffff;
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.35);
+    }
+
+    .btn-secondary {
+      padding: 8px 14px;
+      background: #f97316;
+      color: #ffffff;
+      border: none;
+      box-shadow: 0 6px 14px rgba(249, 115, 22, 0.35);
+    }
+
+    .btn-success {
+      padding: 8px 14px;
+      background: #16a34a;
+      color: #ffffff;
+      box-shadow: 0 6px 14px rgba(22, 163, 74, 0.35);
+    }
+
+    .btn-download {
+      padding: 8px 14px;
+      background: #7c3aed;
+      color: #ffffff;
+      box-shadow: 0 6px 14px rgba(124, 58, 237, 0.4);
+      animation: pulseGlow 1.2s infinite;
+    }
+
+    button:active {
+      transform: scale(0.97);
+      filter: brightness(0.98);
+      box-shadow: none;
+    }
+
+    .small {
+      font-size: 11px;
+      color: #6b7280;
+      margin-top: 3px;
+    }
+
+    .error {
+      font-size: 11px;
+      color: #b91c1c;
+      margin-top: 4px;
+      min-height: 14px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      font-size: 12px;
+      background: #fcfcff;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 5px 7px;
+      text-align: left;
+      border-bottom: 1px solid #f3f4f6;
+      vertical-align: middle;
+    }
+
+    th {
+      font-weight: 600;
+      color: #6b7280;
+      font-size: 11px;
+      background: #f3f4ff;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody tr:hover {
+      background: #f9fafb;
+    }
+
+    .tag-total {
+      margin-top: 6px;
+      font-size: 12px;
+      color: #111827;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tag-total span {
+      font-weight: 600;
+      color: #111827;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    .pill-muted {
+      background: #f3f4f6;
+      color: #4b5563;
+    }
+
+    .remove-btn {
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: 11px;
+      border: none;
+      background: #fee2e2;
+      color: #991b1b;
+      cursor: pointer;
+    }
+
+    .remove-btn:hover {
+      background: #fecaca;
+    }
+
+    .btn-row {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 7px;
+      flex-wrap: wrap;
+    }
+
+    .summary-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 9px 0 4px;
+    }
+
+    .summary-box {
+      flex: 1;
+      min-width: 150px;
+      border-radius: 12px;
+      padding: 8px 10px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      font-size: 12px;
+    }
+
+    .summary-box strong {
+      display: block;
+      font-size: 11px;
+      text-transform: uppercase;
+      color: #6b7280;
+      margin-bottom: 3px;
+      letter-spacing: 0.03em;
+    }
+
+    .summary-box span {
+      font-weight: 700;
+      color: #111827;
+      font-size: 13px;
+    }
+
+    .summary-cost span {
+      color: #0ea5e9;
+    }
+
+    .summary-extras span {
+      color: #6366f1;
+    }
+
+    .summary-total span {
+      color: #111827;
+    }
+
+    .summary-revenue span {
+      color: #2563eb;
+    }
+
+    .summary-profit span {
+      color: #16a34a;
+    }
+
+    .percent-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .percent-btn {
+      padding: 7px 12px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+      font-size: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: #111827;
+    }
+
+    .percent-btn span.badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .percent-btn.active {
+      border-color: #16a34a;
+      background: #dcfce7;
+      color: #064e3b;
+      box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.6);
+      animation: pulseGlow 1.2s infinite;
+    }
+
+    @keyframes pulseGlow {
+      0% {
+        box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.6);
+      }
+      70% {
+        box-shadow: 0 0 0 8px rgba(22, 163, 74, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(22, 163, 74, 0);
+      }
+    }
+
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .results-header-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #111827;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .results-header-title span.tag {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #4f46e5;
+      font-weight: 600;
+    }
+
+    .results-header-note {
+      font-size: 11px;
+      color: #6b7280;
+      text-align: right;
+    }
+
+    .muted {
+      font-size: 11px;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+
+    .money-accent-preco {
+      font-weight: 600;
+      color: #f97316;
+    }
+
+    .money-accent-lucro {
+      font-weight: 600;
+      color: #16a34a;
+    }
+
+    .money-accent-custo {
+      font-weight: 500;
+      color: #0ea5e9;
+    }
+
+    /* Histórico */
+    #history-panel {
+      margin-top: 10px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      font-size: 12px;
+    }
+
+    #history-panel h3 {
+      margin: 0 0 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    #history-panel table {
+      background: #ffffff;
+      margin-top: 4px;
+    }
+
+    #history-panel th {
+      background: #eef2ff;
+      font-size: 11px;
+    }
+
+    /* ----------- SEÇÃO DE DOAÇÃO / PIX ----------- */
+
+    .donation-card {
+      margin-top: 12px;
+    }
+
+    .donation-qr {
+      display: flex;
+      justify-content: center;
+      margin: 8px 0 10px;
+    }
+
+    .donation-qr img {
+      max-width: 220px;
+      width: 100%;
+      border-radius: 16px;
+      border: 1px solid #e5e7eb;
+      padding: 8px;
+      background: #f9fafb;
+    }
+
+    .donation-key-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+      align-items: stretch;
+    }
+
+    #pix-key {
+      flex: 1;
+      min-height: 60px;
+      resize: none;
+      border-radius: 12px;
+      border: 1px solid #d1d5db;
+      padding: 8px 10px;
+      font-size: 12px;
+      font-family: monospace;
+      color: #111827;
+      outline: none;
+      background: #ffffff;
+    }
+
+    #pix-key:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 1px #bfdbfe;
+    }
+
+    .btn-copy {
+      white-space: nowrap;
+    }
+
+    .donation-textbox {
+      margin-top: 10px;
+      border-radius: 12px;
+      border: 1px dashed #e5e7eb;
+      background: #f9fafb;
+      padding: 8px 10px;
+      font-size: 12px;
+      color: #374151;
+    }
+
+    .donation-textbox strong {
+      color: #111827;
+    }
+
+    .copy-feedback {
+      font-size: 11px;
+      color: #16a34a;
+      margin-top: 4px;
+      min-height: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1><span>📦</span> Calcular Preço</h1>
+      <p>
+        Calcule preços de venda justos a partir do custo da mercadoria, frete e outros gastos, garantindo o lucro desejado com clareza.
+      </p>
+    </header>
+
+    <div class="grid">
+      <!-- ESQUERDA -->
+      <div class="card">
+        <h2><span>🧾</span> Itens da caixa e custos</h2>
+        <p class="sub">
+          Comece informando tudo que veio na caixa (itens) e em seguida cadastre os gastos extras até a mercadoria chegar em você.
+        </p>
+
+        <div class="field">
+          <label>Itens que vieram na caixa</label>
+          <div class="inline-fields-3">
+            <input type="text" id="item-desc" placeholder="Ex.: Camiseta, Short, Óculos" />
+            <input type="number" id="item-qty" min="1" placeholder="Qtd." />
+            <input type="text" id="item-cost" placeholder="Custo unitário (R$)" />
+          </div>
+          <div class="btn-row" style="justify-content:flex-start; margin-top:6px;">
+            <button class="btn-secondary" id="add-item-btn">Adicionar item</button>
+          </div>
+          <div class="small">
+            Exemplo: “Camiseta / 5 / 12,00”, “Short / 2 / 25,00”, “Óculos / 3 / 12,00”.
+          </div>
+        </div>
+
+        <table id="items-table" style="display:none;">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Qtd.</th>
+              <th>Custo unit. (R$)</th>
+              <th>Total compra (R$)</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+
+        <div class="tag-total" id="items-total-row" style="display:none;">
+          <span class="pill pill-muted">Mercadorias</span>
+          Total em mercadorias (custo da caixa): <span id="items-total-text">R$ 0,00</span>
+        </div>
+
+        <hr style="border:none; border-top:1px solid #e5e7eb; margin:12px 0;" />
+
+        <div class="field">
+          <label>Gastos extras (frete, motoboy, gasolina, taxas…)</label>
+          <input
+            type="text"
+            id="extra-desc"
+            placeholder="Ex.: Motoboy 10, Gasolina 15,90, Frete 25"
+          />
+          <div class="btn-row" style="justify-content:flex-start; margin-top:6px;">
+            <button class="btn-secondary" id="add-extra-btn">Adicionar gasto</button>
+          </div>
+          <div class="small">
+            Digite o nome + valor no mesmo campo. Ex.: <strong>“Motoboy 10”</strong>.
+          </div>
+        </div>
+
+        <table id="extras-table" style="display:none;">
+          <thead>
+            <tr>
+              <th>Descrição</th>
+              <th>Valor (R$)</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+
+        <div class="tag-total" id="extras-total-row" style="display:none;">
+          <span class="pill">Gastos extras</span>
+          Total de gastos extras: <span id="extras-total-text">R$ 0,00</span>
+        </div>
+
+        <div class="summary-row" id="cost-summary" style="display:none;">
+          <div class="summary-box summary-cost">
+            <strong>Custo da mercadoria</strong>
+            <span id="summary-items">R$ 0,00</span>
+          </div>
+          <div class="summary-box summary-extras">
+            <strong>Gastos extras</strong>
+            <span id="summary-extras">R$ 0,00</span>
+          </div>
+          <div class="summary-box summary-total">
+            <strong>Custo total (caixa + gastos)</strong>
+            <span id="summary-total">R$ 0,00</span>
+          </div>
+        </div>
+
+        <hr style="border:none; border-top:1px solid #e5e7eb; margin:12px 0;" />
+
+        <div class="field">
+          <label for="profit">Quanto de lucro você quer (%)?</label>
+          <input
+            type="number"
+            id="profit"
+            min="1"
+            max="500"
+            placeholder="Ex.: 30"
+            value="30"
+          />
+          <div class="small">
+            Exemplo: 30 = você deseja 30% de lucro sobre o custo total.
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-primary" id="calculate-btn">Calcular preços</button>
+        </div>
+        <div class="error" id="calc-error"></div>
+      </div>
+
+      <!-- DIREITA -->
+      <div class="card">
+        <h2><span>📊</span> Resultado do cálculo</h2>
+        <p class="sub">
+          Aqui você verá o preço sugerido de cada item, a receita bruta e o lucro estimado.
+        </p>
+
+        <div id="results-block" style="display:none;">
+          <div class="results-header">
+            <div class="results-header-title" id="results-title">
+              Resultados para lucro de 30% <span class="tag">simulação ativa</span>
+            </div>
+            <div class="results-header-note">
+              Clique nos botões abaixo para testar outras margens.
+            </div>
+          </div>
+
+          <div class="percent-row" id="percent-buttons"></div>
+
+          <div class="summary-row">
+            <div class="summary-box summary-total">
+              <strong>Custo total</strong>
+              <span id="res-custo-total">R$ 0,00</span>
+            </div>
+            <div class="summary-box summary-revenue">
+              <strong>Receita bruta estimada</strong>
+              <span id="res-receita">R$ 0,00</span>
+            </div>
+            <div class="summary-box summary-profit">
+              <strong>Lucro estimado</strong>
+              <span id="res-lucro">R$ 0,00</span>
+            </div>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Qtd.</th>
+                <th>Custo unit. final (R$)</th>
+                <th>Preço sugerido (R$)</th>
+                <th>Total venda (R$)</th>
+                <th>Lucro aprox. (R$)</th>
+              </tr>
+            </thead>
+            <tbody id="results-items-body"></tbody>
+          </table>
+
+          <div class="muted">
+            Os preços já incluem o rateio dos gastos extras e a margem de lucro escolhida.
+          </div>
+
+          <div class="btn-row" style="margin-top:10px; justify-content:flex-end;">
+            <button class="btn-secondary" id="view-history-btn">Ver histórico</button>
+            <button class="btn-success" id="save-history-btn">Salvar resultado no histórico</button>
+            <button class="btn-download" id="download-pdf-btn" style="display:none;">Baixar PDF</button>
+          </div>
+
+          <div id="history-panel" style="display:none;">
+            <h3>Histórico de resultados (últimos 30 cálculos salvos)</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Lucro (%)</th>
+                  <th>Custo total</th>
+                  <th>Receita bruta</th>
+                  <th>Lucro</th>
+                </tr>
+              </thead>
+              <tbody id="history-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="results-placeholder" class="muted" style="margin-top:4px;">
+          Preencha as informações do lado esquerdo e clique em <strong>Calcular preços</strong>.
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD DE DOAÇÃO / PIX -->
+    <div class="card donation-card">
+      <h2><span>❤️</span> Apoie este projeto</h2>
+      <p class="sub">
+        Esta calculadora é 100% gratuita. Se ela te ajudar de alguma forma e você quiser retribuir,
+        você pode mandar qualquer valor via Pix.
+      </p>
+
+      <div class="donation-qr">
+        <!-- salve seu QR como qrcode-pix.png na mesma pasta deste HTML -->
+        <img src="qrcode-pix.png" alt="QR Code para doação via Pix" />
+      </div>
+
+      <div class="field">
+        <label>Chave Pix — copia e cola</label>
+        <div class="donation-key-row">
+<textarea id="pix-key" readonly>00020126760014br.gov.bcb.pix0136a8a3d1c5-6c7c-4226-871f-189af0733af50214Muito Obrigado5204000053039865802BR5925DHYERISON MAER DE BRITO L6009Sao Paulo62290525REC692896AAF2CCF9105986626304EA67</textarea>
+          <button class="btn-secondary btn-copy" id="copy-pix-btn">Copiar chave Pix</button>
+        </div>
+        <div class="copy-feedback" id="copy-feedback"></div>
+      </div>
+
+      <div class="donation-textbox">
+        <p>
+          Esta página foi criada com muito carinho para ajudar pequenos vendedores a precificar
+          suas mercadorias sem pagar nada por isso.
+          <br><br>
+          Se esta calculadora facilitar o seu dia a dia e você sentir no coração vontade de ajudar,
+          qualquer valor — até mesmo <strong>R$ 1,00</strong> — já faz uma enorme diferença.
+          Estou juntando aos pouquinhos para realizar o sonho de <strong>construir a minha casa</strong>.
+          <br><br>
+          <strong>Doando ou não, a calculadora continua gratuita para sempre.</strong>
+          Obrigado de verdade por usar, compartilhar e, se puder, apoiar ❤️
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const currencyBRL = new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+      minimumFractionDigits: 2,
+    });
+
+    function parseNumber(value) {
+      if (!value) return NaN;
+      const cleaned = value.toString().trim().replace(/\./g, "").replace(",", ".");
+      return parseFloat(cleaned);
+    }
+
+    let extras = [];
+    let items = [];
+    let history = [];
+    let currentResult = null;
+    let currentMarginDecimal = null;
+    const HISTORY_KEY = "calcPrecoHistory_v1";
+
+    function loadHistory() {
+      try {
+        const raw = localStorage.getItem(HISTORY_KEY);
+        if (raw) {
+          history = JSON.parse(raw);
+          if (!Array.isArray(history)) history = [];
+        } else {
+          history = [];
+        }
+      } catch {
+        history = [];
+      }
+    }
+
+    function saveHistoryToStorage() {
+      try {
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+      } catch {}
+    }
+
+    const extrasTable = document.getElementById("extras-table");
+    const extrasTbody = extrasTable.querySelector("tbody");
+    const extrasTotalRow = document.getElementById("extras-total-row");
+    const extrasTotalText = document.getElementById("extras-total-text");
+
+    const itemsTable = document.getElementById("items-table");
+    const itemsTbody = itemsTable.querySelector("tbody");
+    const itemsTotalRow = document.getElementById("items-total-row");
+    const itemsTotalText = document.getElementById("items-total-text");
+
+    const summaryBox = document.getElementById("cost-summary");
+    const summaryItems = document.getElementById("summary-items");
+    const summaryExtras = document.getElementById("summary-extras");
+    const summaryTotal = document.getElementById("summary-total");
+
+    const addExtraBtn = document.getElementById("add-extra-btn");
+    const addItemBtn = document.getElementById("add-item-btn");
+    const calculateBtn = document.getElementById("calculate-btn");
+    const calcError = document.getElementById("calc-error");
+
+    const extraDescInput = document.getElementById("extra-desc");
+    const itemDescInput = document.getElementById("item-desc");
+    const itemQtyInput = document.getElementById("item-qty");
+    const itemCostInput = document.getElementById("item-cost");
+    const profitInput = document.getElementById("profit");
+
+    const resultsBlock = document.getElementById("results-block");
+    const resultsPlaceholder = document.getElementById("results-placeholder");
+    const percentButtonsRow = document.getElementById("percent-buttons");
+    const resultsTitle = document.getElementById("results-title");
+
+    const resCustoTotal = document.getElementById("res-custo-total");
+    const resReceita = document.getElementById("res-receita");
+    const resLucro = document.getElementById("res-lucro");
+    const resultsItemsBody = document.getElementById("results-items-body");
+
+    const saveHistoryBtn = document.getElementById("save-history-btn");
+    const downloadPdfBtn = document.getElementById("download-pdf-btn");
+    const viewHistoryBtn = document.getElementById("view-history-btn");
+    const historyPanel = document.getElementById("history-panel");
+    const historyBody = document.getElementById("history-body");
+
+    const copyPixBtn = document.getElementById("copy-pix-btn");
+    const pixKeyTextarea = document.getElementById("pix-key");
+    const copyFeedback = document.getElementById("copy-feedback");
+
+    function updateExtrasView() {
+      extrasTbody.innerHTML = "";
+      let total = 0;
+
+      extras.forEach((ex, index) => {
+        total += ex.valor;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${ex.descricao}</td>
+          <td>${currencyBRL.format(ex.valor)}</td>
+          <td style="text-align:right;">
+            <button class="remove-btn" data-extra-index="${index}">remover</button>
+          </td>
+        `;
+        extrasTbody.appendChild(tr);
+      });
+
+      if (extras.length > 0) {
+        extrasTable.style.display = "";
+        extrasTotalRow.style.display = "";
+        extrasTotalText.textContent = currencyBRL.format(total);
+      } else {
+        extrasTable.style.display = "none";
+        extrasTotalRow.style.display = "none";
+      }
+
+      updateCostSummary();
+    }
+
+    function updateItemsView() {
+      itemsTbody.innerHTML = "";
+      let total = 0;
+
+      items.forEach((it, index) => {
+        const subtotal = it.quantidade * it.custoUnit;
+        total += subtotal;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${it.descricao}</td>
+          <td>${it.quantidade}</td>
+          <td>${currencyBRL.format(it.custoUnit)}</td>
+          <td>${currencyBRL.format(subtotal)}</td>
+          <td style="text-align:right;">
+            <button class="remove-btn" data-item-index="${index}">remover</button>
+          </td>
+        `;
+        itemsTbody.appendChild(tr);
+      });
+
+      if (items.length > 0) {
+        itemsTable.style.display = "";
+        itemsTotalRow.style.display = "";
+        itemsTotalText.textContent = currencyBRL.format(total);
+      } else {
+        itemsTable.style.display = "none";
+        itemsTotalRow.style.display = "none";
+      }
+
+      updateCostSummary();
+    }
+
+    function updateCostSummary() {
+      const totalExtras = extras.reduce((acc, ex) => acc + ex.valor, 0);
+      const totalItems = items.reduce((acc, it) => acc + it.quantidade * it.custoUnit, 0);
+      const total = totalExtras + totalItems;
+
+      if (total === 0) {
+        summaryBox.style.display = "none";
+      } else {
+        summaryBox.style.display = "flex";
+        summaryItems.textContent = currencyBRL.format(totalItems);
+        summaryExtras.textContent = currencyBRL.format(totalExtras);
+        summaryTotal.textContent = currencyBRL.format(total);
+      }
+    }
+
+    function parseExtraInput(raw) {
+      const text = raw.trim();
+      if (!text) return null;
+
+      const matches = text.match(/(\d+(?:[.,]\d+)?)/g);
+      if (!matches || matches.length === 0) return null;
+
+      const numberStr = matches[matches.length - 1];
+      const valor = parseNumber(numberStr);
+      if (isNaN(valor) || valor <= 0) return null;
+
+      const descPart = text.replace(numberStr, "").trim();
+      const descricao =
+        descPart.length > 0 ? descPart[0].toUpperCase() + descPart.slice(1) : "Gasto";
+
+      return { descricao, valor };
+    }
+
+    addExtraBtn.addEventListener("click", () => {
+      const raw = extraDescInput.value;
+      const parsed = parseExtraInput(raw);
+
+      if (!parsed) {
+        alert("Informe o nome e o valor do gasto. Ex.: Motoboy 10");
+        return;
+      }
+
+      extras.push(parsed);
+      extraDescInput.value = "";
+      updateExtrasView();
+    });
+
+    addItemBtn.addEventListener("click", () => {
+      const desc = itemDescInput.value.trim() || "Item";
+      const qty = parseInt(itemQtyInput.value, 10);
+      const cost = parseNumber(itemCostInput.value);
+
+      if (!qty || qty <= 0 || isNaN(cost) || cost <= 0) {
+        alert("Informe quantidade e custo unitário válidos para o item.");
+        return;
+      }
+
+      items.push({ descricao: desc, quantidade: qty, custoUnit: cost });
+      itemDescInput.value = "";
+      itemQtyInput.value = "";
+      itemCostInput.value = "";
+      updateItemsView();
+    });
+
+    document.addEventListener("click", (e) => {
+      const extraIndex = e.target.getAttribute("data-extra-index");
+      const itemIndex = e.target.getAttribute("data-item-index");
+
+      if (extraIndex !== null) {
+        extras.splice(Number(extraIndex), 1);
+        updateExtrasView();
+      }
+
+      if (itemIndex !== null) {
+        items.splice(Number(itemIndex), 1);
+        updateItemsView();
+      }
+    });
+
+    function calcularParaMargem(margemDecimal) {
+      const totalExtras = extras.reduce((acc, ex) => acc + ex.valor, 0);
+      const totalMercadorias = items.reduce((acc, it) => acc + it.quantidade * it.custoUnit, 0);
+      const custoTotal = totalExtras + totalMercadorias;
+
+      if (custoTotal <= 0 || totalMercadorias <= 0) {
+        return null;
+      }
+
+      const receita = custoTotal * (1 + margemDecimal);
+      const lucro = receita - custoTotal;
+
+      const detalhesItens = items.map((it) => {
+        const baseTotal = it.quantidade * it.custoUnit;
+        const proporcao = baseTotal / totalMercadorias;
+        const extraRateado = totalExtras * proporcao;
+        const custoTotalItem = baseTotal + extraRateado;
+        const custoUnitFinal = custoTotalItem / it.quantidade;
+        const precoUnitSug = custoUnitFinal * (1 + margemDecimal);
+        const totalVendaItem = precoUnitSug * it.quantidade;
+        const lucroItem = totalVendaItem - custoTotalItem;
+
+        return {
+          descricao: it.descricao,
+          quantidade: it.quantidade,
+          custoUnitFinal,
+          precoUnitSug,
+          totalVendaItem,
+          lucroItem,
+        };
+      });
+
+      return {
+        margemDecimal,
+        custoTotal,
+        receita,
+        lucro,
+        itens: detalhesItens,
+      };
+    }
+
+    function renderResultados(margemDecimal) {
+      const data = calcularParaMargem(margemDecimal);
+      if (!data) return;
+
+      currentMarginDecimal = margemDecimal;
+      currentResult = data;
+
+      const perc = (margemDecimal * 100).toFixed(0);
+      resultsTitle.innerHTML = `Resultados para lucro de ${perc}% <span class="tag">simulação ativa</span>`;
+      resCustoTotal.textContent = currencyBRL.format(data.custoTotal);
+      resReceita.textContent = currencyBRL.format(data.receita);
+      resLucro.textContent = currencyBRL.format(data.lucro);
+
+      resultsItemsBody.innerHTML = "";
+      data.itens.forEach((it) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${it.descricao}</td>
+          <td>${it.quantidade}</td>
+          <td><span class="money-accent-custo">${currencyBRL.format(it.custoUnitFinal)}</span></td>
+          <td><span class="money-accent-preco">${currencyBRL.format(it.precoUnitSug)}</span></td>
+          <td>${currencyBRL.format(it.totalVendaItem)}</td>
+          <td><span class="money-accent-lucro">${currencyBRL.format(it.lucroItem)}</span></td>
+        `;
+        resultsItemsBody.appendChild(tr);
+      });
+
+      downloadPdfBtn.style.display = "";
+      downloadPdfBtn.textContent = `Baixar PDF (${perc}%)`;
+    }
+
+    function criarBotoesMargem(margemEscolhida) {
+      percentButtonsRow.innerHTML = "";
+
+      const chosen = Math.round(margemEscolhida * 100);
+      const percents = [];
+      for (let i = 0; i < 5; i++) {
+        percents.push(chosen + i * 5);
+      }
+
+      percents.forEach((p) => {
+        const btn = document.createElement("button");
+        btn.className = "percent-btn";
+        btn.setAttribute("data-percent", p.toString());
+        btn.innerHTML = `<span>${p}%</span><span class="badge">lucro</span>`;
+        if (p === chosen) {
+          btn.classList.add("active");
+        }
+        percentButtonsRow.appendChild(btn);
+      });
+    }
+
+    percentButtonsRow.addEventListener("click", (e) => {
+      const btn = e.target.closest(".percent-btn");
+      if (!btn) return;
+
+      const percentStr = btn.getAttribute("data-percent");
+      const p = parseFloat(percentStr);
+      if (!p || p <= 0) return;
+
+      const margemDecimal = p / 100;
+      renderResultados(margemDecimal);
+
+      Array.from(percentButtonsRow.children).forEach((child) =>
+        child.classList.remove("active")
+      );
+      btn.classList.add("active");
+    });
+
+    calculateBtn.addEventListener("click", () => {
+      calcError.textContent = "";
+
+      if (items.length === 0) {
+        calcError.textContent =
+          "Adicione pelo menos um item da caixa antes de calcular.";
+        return;
+      }
+
+      const margemPercent = parseFloat(profitInput.value);
+      const margemDecimal =
+        !isNaN(margemPercent) && margemPercent > 0 ? margemPercent / 100 : 0.3;
+
+      const checkData = calcularParaMargem(margemDecimal);
+      if (!checkData) {
+        calcError.textContent =
+          "Verifique se os valores dos itens e gastos extras foram preenchidos corretamente.";
+        return;
+      }
+
+      resultsBlock.style.display = "";
+      resultsPlaceholder.style.display = "none";
+      criarBotoesMargem(margemDecimal);
+      renderResultados(margemDecimal);
+    });
+
+    function renderHistory() {
+      historyBody.innerHTML = "";
+      if (!history || history.length === 0) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="5" style="text-align:center; font-size:11px; color:#6b7280;">Nenhum resultado salvo ainda.</td>`;
+        historyBody.appendChild(tr);
+        return;
+      }
+
+      const list = [...history].slice().reverse();
+
+      list.forEach((entry) => {
+        const d = new Date(entry.timestamp);
+        const dataFormatada = d.toLocaleString("pt-BR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${dataFormatada}</td>
+          <td>${entry.marginPercent}%</td>
+          <td>${currencyBRL.format(entry.custoTotal)}</td>
+          <td>${currencyBRL.format(entry.receita)}</td>
+          <td>${currencyBRL.format(entry.lucro)}</td>
+        `;
+        historyBody.appendChild(tr);
+      });
+    }
+
+    viewHistoryBtn.addEventListener("click", () => {
+      if (!history || history.length === 0) {
+        alert("Nenhum resultado salvo ainda no histórico.");
+        return;
+      }
+      if (historyPanel.style.display === "none" || historyPanel.style.display === "") {
+        renderHistory();
+        historyPanel.style.display = "block";
+      } else {
+        historyPanel.style.display = "none";
+      }
+    });
+
+    saveHistoryBtn.addEventListener("click", () => {
+      if (!currentResult || currentMarginDecimal === null) {
+        alert("Calcule primeiro um resultado para salvar no histórico.");
+        return;
+      }
+
+      const entry = {
+        timestamp: new Date().toISOString(),
+        marginPercent: Math.round(currentMarginDecimal * 100),
+        custoTotal: currentResult.custoTotal,
+        receita: currentResult.receita,
+        lucro: currentResult.lucro,
+      };
+
+      history.push(entry);
+      if (history.length > 30) {
+        history = history.slice(history.length - 30);
+      }
+      saveHistoryToStorage();
+      alert("Resultado salvo no histórico (até 30 registros).");
+    });
+
+    downloadPdfBtn.addEventListener("click", () => {
+      if (!currentResult || currentMarginDecimal === null) {
+        alert("Calcule primeiro um resultado para gerar o PDF.");
+        return;
+      }
+
+      const perc = (currentMarginDecimal * 100).toFixed(0);
+      const custo = currencyBRL.format(currentResult.custoTotal);
+      const receita = currencyBRL.format(currentResult.receita);
+      const lucro = currencyBRL.format(currentResult.lucro);
+
+      const win = window.open("", "_blank");
+      if (!win) {
+        alert("Não foi possível abrir a janela para gerar o PDF. Verifique o bloqueador de pop-ups.");
+        return;
+      }
+
+      win.document.write(`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Relatório ${perc}%</title>
+      <style>
+        body {
+          font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+          padding: 20px;
+          color: #111827;
+          background: #f3f4f6;
+        }
+        .page {
+          max-width: 800px;
+          margin: 0 auto;
+          background: #ffffff;
+          border-radius: 12px;
+          padding: 16px 18px 20px;
+          border: 1px solid #e5e7eb;
+        }
+        h1 {
+          font-size: 20px;
+          margin: 0 0 4px;
+        }
+        .tag {
+          display: inline-block;
+          padding: 2px 8px;
+          border-radius: 999px;
+          background: #e0f2fe;
+          color: #0369a1;
+          font-size: 11px;
+          margin-left: 8px;
+        }
+        .subtitle {
+          font-size: 12px;
+          color: #6b7280;
+          margin: 0 0 10px;
+        }
+        .summary-row {
+          display: flex;
+          gap: 8px;
+          margin: 10px 0 14px;
+        }
+        .box {
+          flex: 1;
+          border-radius: 10px;
+          padding: 10px;
+          color: #ffffff;
+        }
+        .box h2 {
+          margin: 0 0 4px;
+          font-size: 12px;
+          text-transform: uppercase;
+          letter-spacing: 0.03em;
+        }
+        .box span.value {
+          font-size: 15px;
+          font-weight: 700;
+        }
+        .box-cost {
+          background: #0ea5e9;
+        }
+        .box-revenue {
+          background: #2563eb;
+        }
+        .box-profit {
+          background: #16a34a;
+        }
+        h2.section-title {
+          font-size: 14px;
+          margin: 12px 0 6px;
+          padding-bottom: 4px;
+          border-bottom: 1px solid #e5e7eb;
+        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 6px;
+          font-size: 12px;
+        }
+        th, td {
+          padding: 4px 6px;
+          border-bottom: 1px solid #e5e7eb;
+          text-align: left;
+        }
+        th {
+          background: #f9fafb;
+          font-weight: 600;
+          color: #374151;
+        }
+        .footnote {
+          margin-top: 10px;
+          font-size: 11px;
+          color: #6b7280;
+        }
+      </style>
+      </head><body>`);
+
+      win.document.write(`<div class="page">`);
+      win.document.write(`<h1>Relatório de preços (${perc}%)<span class="tag">Calcular Preço</span></h1>`);
+      win.document.write(`<p class="subtitle">Resumo do custo total, receita bruta e lucro estimado para a margem de ${perc}%.</p>`);
+
+      win.document.write(`
+        <div class="summary-row">
+          <div class="box box-cost">
+            <h2>Gasto total</h2>
+            <span class="value">${custo}</span>
+          </div>
+          <div class="box box-revenue">
+            <h2>Receita bruta</h2>
+            <span class="value">${receita}</span>
+          </div>
+          <div class="box box-profit">
+            <h2>Lucro estimado</h2>
+            <span class="value">${lucro}</span>
+          </div>
+        </div>
+      `);
+
+      win.document.write(`<h2 class="section-title">Detalhamento por item</h2>`);
+      win.document.write(`<table><thead><tr><th>Item</th><th>Qtd.</th><th>Custo unit. (R$)</th><th>Preço sugerido (R$)</th><th>Total venda (R$)</th></tr></thead><tbody>`);
+
+      currentResult.itens.forEach((it) => {
+        win.document.write(
+          `<tr>
+            <td>${it.descricao}</td>
+            <td>${it.quantidade}</td>
+            <td>${currencyBRL.format(it.custoUnitFinal)}</td>
+            <td>${currencyBRL.format(it.precoUnitSug)}</td>
+            <td>${currencyBRL.format(it.totalVendaItem)}</td>
+          </tr>`
+        );
+      });
+
+      win.document.write(`</tbody></table>`);
+      win.document.write(
+        `<p class="footnote">Use a opção “Imprimir” do navegador e selecione “Salvar como PDF” para guardar este relatório.</p>`
+      );
+      win.document.write(`</div></body></html>`);
+      win.document.close();
+      win.focus();
+      win.print();
+    });
+
+    // botão copiar chave pix
+    if (copyPixBtn && pixKeyTextarea && copyFeedback) {
+      copyPixBtn.addEventListener("click", () => {
+        const text = pixKeyTextarea.value;
+
+        const onSuccess = () => {
+          copyFeedback.textContent = "Chave Pix copiada com sucesso!";
+          setTimeout(() => {
+            copyFeedback.textContent = "";
+          }, 3000);
+        };
+
+        const fallback = () => {
+          pixKeyTextarea.select();
+          try {
+            document.execCommand("copy");
+            onSuccess();
+          } catch {
+            copyFeedback.textContent =
+              "Não foi possível copiar automaticamente. Copie a chave manualmente.";
+          }
+        };
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(onSuccess).catch(fallback);
+        } else {
+          fallback();
+        }
+      });
+    }
+
+    loadHistory();
+  </script>
+</body>
+</html>
